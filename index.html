@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ICanSpeakProfessionally | Local Professional Rewriter</title>
+  <meta name="description" content="A private local-first rewriter that turns casual drafts into professional emails and workplace messages without external AI APIs." />
+  <meta property="og:title" content="ICanSpeakProfessionally" />
+  <meta property="og:description" content="Turn layman speak into polished professional communication locally in your browser." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="nav-wrap">
+    <nav aria-label="Primary navigation">
+      <a href="#top" class="brand" aria-label="ICanSpeakProfessionally home">
+        <img src="assets/logo.svg" alt="" class="brand-mark" />
+        <span>ICanSpeak<em>Professionally</em></span>
+      </a>
+      <div class="nav-links">
+        <a href="#app" class="btn-outline">Try it</a>
+        <a href="#privacy" class="btn-outline hide-sm">Privacy</a>
+        <a href="#github" class="btn-gold">GitHub setup</a>
+      </div>
+    </nav>
+  </div>
+
+  <main id="top">
+    <section class="hero section-wide">
+      <div class="hero-badge fade-up">
+        <span class="hero-badge-dot"></span>
+        Local-first · No external AI API · Browser-side rewriting
+      </div>
+      <h1 class="hero-title fade-up-2">
+        Turn everyday wording into<br />
+        <em>polished professional communication</em>
+      </h1>
+      <p class="hero-sub fade-up-3">
+        Paste a rough message. Pick a tone. Get a cleaner email, Slack note, follow-up, apology, complaint, or request generated locally on your device.
+      </p>
+      <div class="hero-cta fade-up-3">
+        <a href="#app" class="btn-hero">Start rewriting</a>
+        <a href="#how" class="btn-ghost">How it works</a>
+      </div>
+      <p class="hero-note">This build uses a local rule-based language engine. It does not call OpenAI, Claude, Stripe, Clerk, or any external backend.</p>
+    </section>
+
+    <section class="section app-shell" id="app" aria-labelledby="app-title">
+      <div class="section-kicker">Working app</div>
+      <h2 id="app-title" class="section-title">Local professional rewriter</h2>
+      <p class="section-sub">Everything below runs in this page. Your text stays in the browser unless you copy or export it yourself.</p>
+
+      <div class="workspace">
+        <div class="panel input-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Input</p>
+              <h3>Write it casually</h3>
+            </div>
+            <button class="chip-btn" id="clearBtn" type="button">Clear</button>
+          </div>
+
+          <label class="field-label" for="rawInput">Your rough draft</label>
+          <textarea id="rawInput" spellcheck="true" placeholder="Example: hey can you send me the report asap, i need it before the meeting and i forgot to ask earlier"></textarea>
+
+          <div class="quick-examples" aria-label="Example drafts">
+            <button type="button" data-example="hey can you send me the file asap i need it for the meeting today">Request</button>
+            <button type="button" data-example="sorry i missed the deadline i completely forgot but i will send it by tonight">Apology</button>
+            <button type="button" data-example="third time asking about payment this is getting ridiculous please clear it today">Payment follow-up</button>
+            <button type="button" data-example="i cannot join the call today can we move it to friday afternoon">Reschedule</button>
+          </div>
+
+          <div class="control-grid">
+            <label>
+              <span>Output type</span>
+              <select id="formatSelect">
+                <option value="email">Professional email</option>
+                <option value="message">Work chat message</option>
+                <option value="notice">Formal note</option>
+              </select>
+            </label>
+            <label>
+              <span>Tone</span>
+              <select id="toneSelect">
+                <option value="polite">Polite</option>
+                <option value="formal">Formal</option>
+                <option value="concise">Concise</option>
+                <option value="assertive">Assertive</option>
+                <option value="warm">Warm</option>
+              </select>
+            </label>
+            <label>
+              <span>Recipient</span>
+              <input id="recipientInput" placeholder="Recipient, Team, Sir/Ma'am" />
+            </label>
+            <label>
+              <span>Your sign-off</span>
+              <input id="senderInput" placeholder="Your Name" />
+            </label>
+          </div>
+
+          <div class="toggles">
+            <label><input id="includeSubject" type="checkbox" checked /> Include subject</label>
+            <label><input id="includeExplanation" type="checkbox" checked /> Show rewrite notes</label>
+            <label><input id="saveHistory" type="checkbox" checked /> Save local history</label>
+          </div>
+
+          <div class="action-row">
+            <button id="rewriteBtn" class="btn-primary" type="button">Rewrite locally</button>
+            <button id="allTonesBtn" class="btn-soft" type="button">Generate all tones</button>
+          </div>
+        </div>
+
+        <div class="panel output-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Output</p>
+              <h3>Ready to send</h3>
+            </div>
+            <div class="mini-actions">
+              <button id="copyBtn" class="chip-btn" type="button">Copy</button>
+              <button id="downloadBtn" class="chip-btn" type="button">Download</button>
+            </div>
+          </div>
+
+          <div id="qualityBar" class="quality-bar" aria-live="polite">
+            <span>Detected intent: <strong id="detectedIntent">Waiting</strong></span>
+            <span>Urgency: <strong id="detectedUrgency">Waiting</strong></span>
+          </div>
+
+          <pre id="outputBox" class="output-box">Your rewritten message will appear here.</pre>
+
+          <div id="notesBox" class="notes-box hidden"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tones" aria-labelledby="tones-title">
+      <div class="section-kicker">Tone variants</div>
+      <h2 id="tones-title" class="section-title">Switch style without rewriting manually</h2>
+      <div id="toneCards" class="tone-card-grid">
+        <article class="tone-card empty">
+          <h3>No variants yet</h3>
+          <p>Use Generate all tones to create polite, formal, concise, assertive, and warm versions locally.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section split-section" id="how">
+      <div>
+        <div class="section-kicker">How it works</div>
+        <h2 class="section-title align-left">Local rewriting engine</h2>
+        <p class="body-copy">
+          This version removes the fake SaaS claims from the original page and replaces them with a real browser-side rewriting workflow. It detects intent, urgency, rough phrases, deadlines, and message type, then builds a polished version using local language rules and tone templates.
+        </p>
+      </div>
+      <div class="feature-stack">
+        <div class="feature-row">
+          <span class="feature-icon">01</span>
+          <div><h3>Intent detection</h3><p>Classifies requests, apologies, complaints, follow-ups, payments, rescheduling, leave, and general updates.</p></div>
+        </div>
+        <div class="feature-row">
+          <span class="feature-icon">02</span>
+          <div><h3>Phrase upgrading</h3><p>Converts casual or aggressive wording into workplace-safe language while preserving the core meaning.</p></div>
+        </div>
+        <div class="feature-row">
+          <span class="feature-icon">03</span>
+          <div><h3>Local history</h3><p>Saves recent rewrites in localStorage only, so there is no backend account or server database.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section history-section" aria-labelledby="history-title">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Local only</p>
+            <h2 id="history-title">Rewrite history</h2>
+          </div>
+          <button id="clearHistoryBtn" class="chip-btn" type="button">Clear history</button>
+        </div>
+        <div id="historyList" class="history-list">
+          <p class="muted">No saved rewrites yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section privacy-grid" id="privacy">
+      <div class="privacy-card">
+        <h3>No external API calls</h3>
+        <p>The rewriter runs inside the page using JavaScript. It does not require OpenAI, Anthropic, Google, Clerk, Stripe, Supabase, or a database.</p>
+      </div>
+      <div class="privacy-card">
+        <h3>No fake metrics</h3>
+        <p>The fake user count, fake rating, and fake generated-email stats from the mockup were removed. The page now only claims what it actually does.</p>
+      </div>
+      <div class="privacy-card">
+        <h3>Ready for GitHub Pages</h3>
+        <p>The project is static and can be pushed directly to GitHub, then hosted through GitHub Pages without server setup.</p>
+      </div>
+    </section>
+
+    <section class="section" id="github">
+      <div class="cta-box">
+        <h2 class="cta-title">Push it to GitHub from Windows</h2>
+        <p class="cta-sub">The download includes README.md and PUSH_TO_GITHUB_WINDOWS.md with exact terminal commands.</p>
+        <a class="btn-hero" href="PUSH_TO_GITHUB_WINDOWS.md">View push instructions</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <a href="#top" class="brand small-brand">
+        <img src="assets/logo.svg" alt="" class="brand-mark" />
+        <span>ICanSpeak<em>Professionally</em></span>
+      </a>
+      <div class="footer-links">
+        <a href="README.md">README</a>
+        <a href="PUSH_TO_GITHUB_WINDOWS.md">Windows GitHub push</a>
+        <a href="LICENSE">MIT License</a>
+      </div>
+      <span class="footer-copy">Local-first demo app</span>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

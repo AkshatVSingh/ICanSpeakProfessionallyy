@@ -1,0 +1,12 @@
+{
+  "name": "ICanSpeakProfessionally",
+  "short_name": "SpeakPro",
+  "description": "Local-first professional message rewriter.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0d0f",
+  "theme_color": "#c9a96e",
+  "icons": [
+    { "src": "assets/logo.svg", "sizes": "64x64", "type": "image/svg+xml" }
+  ]
+}
